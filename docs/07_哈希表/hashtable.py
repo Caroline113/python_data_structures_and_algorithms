@@ -87,8 +87,13 @@ class HashTable(object):
     def _find_slot_for_insert(self, key):
         index = self._hash(key)
         _len = len(self._table)
+        attempts = 0
         while not self._slot_can_insert(index):  # 直到找到一个可以用的槽
+            if attempts > _len:  # Rehash if we've attempted more than the table size
+                self._rehash()  # 改变_len
+                return self._find_slot_for_insert(key)
             index = (index * 5 + 1) % _len
+            attempts += 1
         return index
 
     def _slot_can_insert(self, index):
